@@ -15,7 +15,7 @@ RunGCTA <- function(input.string){
     if(Sys.info()["sysname"] == "Linux"){
       gcta.path <- paste0(.libPaths()[1], "/wildsim/bin/linux/gcta64")
     } else {
-      gcta.path <- paste0(.libPaths()[1], "/wildsim/bin/macos/gcta64")
+      gcta.path <- paste0(.libPaths()[1], "/wildsim/bin/macosx/gcta64")
     }
 
 
