@@ -1,0 +1,14 @@
+Package: wildsim
+Type: Package
+Title: Tools for simulating wild populations for Genome-wide Association Studies. 
+Version: 0.1.0
+Date: 2017-10-23
+Author: person("Susan", "Johnston", email = "Susan.Johnston@ed.ac.uk",
+                  role = c("aut", "cre"))
+Description: Tools for simulating wild populations for Genome-wide Association Studies. 
+License: MIT
+Encoding: UTF-8
+LazyData: true
+Imports: GenABEL, ggplot2, plyr
+
+
