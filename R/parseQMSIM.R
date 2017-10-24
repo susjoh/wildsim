@@ -334,7 +334,7 @@ parseQMSIM <- function(model.name,
                       marker.prefix, ".snplist.", i , "_wo_GRM"),
                paste0(marker.prefix, ".snplist.", i , "_GRMs.txt"))
 
-    try(RunGCTA(paste0("--mgrm-gz ", marker.prefix, ".snplist.", i , "_GRMs.txt --pheno ", marker.prefix, ".phenochange.txt --reml --out ", marker.prefix, "_GRMs_res")))
+    try(RunGCTA(paste0("--mgrm-gz ", marker.prefix, ".snplist.", i , "_GRMs.txt --reml-no-constrain --pheno ", marker.prefix, ".phenochange.txt --reml --out ", marker.prefix, "_GRMs_res")))
 
     if(file.exists(paste0(marker.prefix, "_GRMs_res.hsq"))){
       gcta.res.temp <- read.table(paste0(marker.prefix, "_GRMs_res.hsq"), header = T, sep = "\t", fill = T)
@@ -409,7 +409,7 @@ parseQMSIM <- function(model.name,
                       marker.prefix, ".snplist.", i , "_merged_wo_GRM"),
                paste0(marker.prefix, ".snplist.", i , "_merged_GRMs.txt"))
 
-    try(RunGCTA(paste0("--mgrm-gz ", marker.prefix, ".snplist.", i , "_merged_GRMs.txt --pheno ", marker.prefix, ".phenochange.txt --reml --out ", marker.prefix, "_merged_GRMs_res")))
+    try(RunGCTA(paste0("--mgrm-gz ", marker.prefix, ".snplist.", i , "_merged_GRMs.txt --reml-no-constrain --pheno ", marker.prefix, ".phenochange.txt --reml --out ", marker.prefix, "_merged_GRMs_res")))
 
     if(file.exists(paste0(marker.prefix, "_merged_GRMs_res.hsq"))){
       gcta.res.temp <- read.table(paste0(marker.prefix, "_merged_GRMs_res.hsq"), header = T, sep = "\t", fill = T)
