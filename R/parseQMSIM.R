@@ -92,7 +92,7 @@ parseQMSim <- function(markerfile = "p1_mrk_001.txt",
                                  marker.prefix, ".ped"), show.output.on.console = F)
   } else {
 
-    system(input = paste0("sed \"1d\" ", markerfile,
+    system(paste0("sed \"1d\" ", markerfile,
                           " | sed -e \"s/  */ /g\"  | sed -e \"s/^/1 /g\" | sed \"s/ / 0 0 0 /2\" > ",
                           marker.prefix, ".ped"))
 
@@ -109,7 +109,7 @@ parseQMSim <- function(markerfile = "p1_mrk_001.txt",
 
   } else{
 
-    system(input = paste0("sed \"1d\" ", gsub("mrk", "qtl", markerfile),
+    system(paste0("sed \"1d\" ", gsub("mrk", "qtl", markerfile),
                           " | sed -e \"s/  */ /g\"  | sed -e \"s/^/1 /g\" | sed \"s/ / 0 0 0 /2\" > ",
                           qtl.prefix, ".ped"))
   }
