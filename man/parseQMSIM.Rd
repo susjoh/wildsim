@@ -2,20 +2,26 @@
 % Please edit documentation in R/parseQMSIM.R
 \name{parseQMSIM}
 \alias{parseQMSIM}
-\title{parseQMSIM: Parse files in a QMSIM directory.}
+\title{parseQMSIM: Parse files in a QMSIM directory. This function converst the
+simulated data to GenABEL and PLINK format files and creates relatedness
+matrices for the full dataset using GCTA (optional)}
 \usage{
-parseQMSIM(model.name, markerfile = "p1_mrk_001.txt",
-  phenofile = "p1_data_001.txt", flanking.window = 10)
+parseQMSIM(markerfile = "p1_mrk_001.txt", phenofile = "p1_data_001.txt",
+  createGCTA = T, createQTLMerged = T)
 }
 \arguments{
-\item{model.name}{string. This is the name of the directory containing the simulation information.}
-
 \item{markerfile}{string. Default is "p1_mrk_001.txt".}
 
 \item{phenofile}{string. Default is "p1_data_001.txt"}
 
-\item{flanking.window}{integer}
+\item{createGCTA}{boolean. Default TRUE. Creates a relatedness matrix from
+the full data set.}
+
+\item{createQTLMerged}{boolean. Default TRUE. Creates files with ("_merged")
+and without the simulated quantitative trait loci.}
 }
 \description{
-parseQMSIM: Parse files in a QMSIM directory.
+parseQMSIM: Parse files in a QMSIM directory. This function converst the
+simulated data to GenABEL and PLINK format files and creates relatedness
+matrices for the full dataset using GCTA (optional)
 }
