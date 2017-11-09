@@ -39,7 +39,7 @@ estimateQTLEffects <- function(markerfile, flanking.window, merged = F){
   qtl.positions$LogL <- NA
   qtl.positions$qtl.error <- NA
 
-  map.file <- read.table(gsub("p1_", "lm_", paste0(marker.prefix, ".txt")), header = T, stringsAsFactors = F)
+  map.file <- read.table(gsub("p1_", "edited_lm_", paste0(marker.prefix, ".txt")), header = T, stringsAsFactors = F)
   map.file$BP <- map.file$Position*1e6
 
   if(merged){

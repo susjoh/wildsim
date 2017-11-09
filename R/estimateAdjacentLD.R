@@ -9,7 +9,7 @@
 #'
 
 
-estimateLD <- function(markerfile, adjacent.only = T, full.results = F, ld.window.kb = 1000){
+estimateLD <- function(markerfile, full.results = F, ld.window.kb = 1000){
 
   marker.prefix <- gsub(".txt", "", markerfile)
 
@@ -19,10 +19,6 @@ estimateLD <- function(markerfile, adjacent.only = T, full.results = F, ld.windo
   ld.tab$SNP_A <- as.numeric(gsub("M", "", ld.tab$SNP_A))
   ld.tab$SNP_B <- as.numeric(gsub("M", "", ld.tab$SNP_B))
 
-  if(adjacent.only){
-    ld.tab$Diff <- ld.tab$SNP_B - ld.tab$SNP_A
-    ld.tab <- subset(ld.tab, Diff %in% c(-1, 1))
-  }
   ld.tab$Diff <- ld.tab$BP_B - ld.tab$BP_A
   ld.tab$Diff <- ifelse(ld.tab$Diff > 0, ld.tab$Diff, ld.tab$Diff * -1)
   ld.tab$LogR2 <- -log10(ld.tab$R2)
