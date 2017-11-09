@@ -13,9 +13,9 @@ RunPLINK <- function(input.string){
   } else {
 
     if(Sys.info()["sysname"] == "Linux"){
-      plink.path <- paste0(.libPaths()[1], "/wildsim/bin/linux/plink")
+      plink.path <- paste0(.libPaths()[length(.libPaths())], "/wildsim/bin/linux/plink")
     } else {
-      plink.path <- paste0(.libPaths()[1], "/wildsim/bin/macosx/plink")
+      plink.path <- paste0(.libPaths()[length(.libPaths())], "/wildsim/bin/macosx/plink")
     }
 
 

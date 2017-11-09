@@ -4,6 +4,7 @@
 #' @export
 #'
 
+
 RunQMSim <- function(input.string){
 
   if(Sys.info()["sysname"] == "Windows") {
@@ -13,9 +14,9 @@ RunQMSim <- function(input.string){
   } else {
 
     if(Sys.info()["sysname"] == "Linux"){
-      qmsim.path <- paste0(.libPaths()[1], "/wildsim/bin/linux/QMSim")
+      qmsim.path <- paste0(.libPaths()[length(.libPaths())], "/wildsim/bin/linux/QMSim")
     } else {
-      qmsim.path <- paste0(.libPaths()[1], "/wildsim/bin/macosx/QMSim")
+      qmsim.path <- paste0(.libPaths()[length(.libPaths())], "/wildsim/bin/macosx/QMSim")
     }
 
 
