@@ -30,6 +30,8 @@ parseParamFile <- function(paramfile, markerfile = NULL){
   paramfile <- sapply(paramfile, function(x) strsplit(x, split = ",pop=")[[1]][1], USE.NAMES = F)
   paramfile <- gsub("[n", ".n", paramfile, fixed = T)
   paramfile <- gsub(";", "", paramfile, fixed = T)
+  paramfile <- gsub("\"", "", paramfile)
+
 
   data.frame(Parameter = as.character(sapply(paramfile, function(x) strsplit(x, split = "=")[[1]][1], USE.NAMES = F)),
              Value     = as.character(sapply(paramfile, function(x) strsplit(x, split = "=")[[1]][2], USE.NAMES = F)))
