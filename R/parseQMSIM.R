@@ -1,4 +1,4 @@
-#' parseQMSIM: Parse files in a QMSIM directory. This function converst the
+#' parseQMSim: Parse files in a QMSIM directory. This function converst the
 #' simulated data to GenABEL and PLINK format files and creates relatedness
 #' matrices for the full dataset using GCTA (optional)
 #' @param markerfile string. Default is "p1_mrk_001.txt".
@@ -10,7 +10,7 @@
 #' @export
 #'
 
-parseQMSIM <- function(markerfile = "p1_mrk_001.txt",
+parseQMSim <- function(markerfile = "p1_mrk_001.txt",
                         phenofile = "p1_data_001.txt",
                         createGCTA = T,
                         createQTLMerged = T){
