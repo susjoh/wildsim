@@ -9,5 +9,5 @@ Description: Tools for simulating wild populations for Genome-wide Association S
 License: MIT
 Encoding: UTF-8
 LazyData: true
-Imports: GenABEL, ggplot2, plyr
+Imports: GenABEL, ggplot2, plyr, evaluate
 RoxygenNote: 6.0.1
