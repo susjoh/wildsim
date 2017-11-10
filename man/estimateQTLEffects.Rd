@@ -4,10 +4,12 @@
 \alias{estimateQTLEffects}
 \title{estimateQTLEffects: estimate variance attributed to simulated QTLs}
 \usage{
-estimateQTLEffects(markerfile, flanking.window, merged = F)
+estimateQTLEffects(markerfile, phenofile, flanking.window, merged = F)
 }
 \arguments{
 \item{markerfile}{string}
+
+\item{phenofile}{string}
 
 \item{flanking.window}{integer. Number of SNPs flanking the QTL for
 estimation of effect sizes}

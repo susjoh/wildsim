@@ -1,5 +1,6 @@
 #' estimateQTLEffects: estimate variance attributed to simulated QTLs
 #' @param markerfile string
+#' @param phenofile string
 #' @param flanking.window integer. Number of SNPs flanking the QTL for
 #'   estimation of effect sizes
 #' @param merged Boolean, FALSE. If TRUE, include the quantitative trait
@@ -7,7 +8,7 @@
 #' @export
 #'
 
-estimateQTLEffects <- function(markerfile, flanking.window, merged = F){
+estimateQTLEffects <- function(markerfile, phenofile, flanking.window, merged = F){
 
   require(plyr)
   require(evaluate)
@@ -22,6 +23,42 @@ estimateQTLEffects <- function(markerfile, flanking.window, merged = F){
   qtl.positions <- join(qtl.positions, qtl.effects)
 
   qtl.positions
+
+
+  #~~ Are there multiple generations in the QTL effect file? At this stage, just take the weighted mean...
+
+  if(any(table(qtl.positions$ID) > 1)){
+
+    phenofile <- read.table(phenofile, header = T)
+    head(phenofile)
+    temp <- data.frame(tapply(phenofile$QTL, phenofile$G, length))
+    names(temp) <- "N"
+    temp$Gen <- row.names(temp)
+
+    qtl.positions <- join(qtl.positions, temp)
+    rm(temp)
+
+    new.qtl <- NULL
+    for(i in unique(qtl.positions$ID)){
+
+      temp <- subset(qtl.positions, ID == i)
+      temp2 <- data.frame(Var = mean(temp$Var, weights = temp$N),
+                          Allele.Freq.1 = mean(as.numeric(gsub("1:", "", temp$Allele.Freq.1)), weights = temp$N),
+                          Allele.Freq.2 = mean(as.numeric(gsub("2:", "", temp$Allele.Freq.2)), weights = temp$N),
+                          TotalN = sum(temp$N))
+      temp2 <- cbind(temp[1, c("ID", "Chr", "Position", "BP", "Gen")], temp2)
+      new.qtl <- rbind(new.qtl, temp2)
+      rm(temp, temp2)
+
+    }
+
+    qtl.positions <- new.qtl
+    rm(new.qtl)
+  }
+
+
+
+
 
   #~~ First, run the regions in the dataset that does not include the QTL.
 
