@@ -117,21 +117,23 @@ parseQMSim <- function(markerfile = "p1_mrk_001.txt",
 
   #~~ Create map files - convert linkage map positions to approx bp positions (cM * 1e6)
 
-  # markers
-  maptab <- read.table(paste0(gsub("p1_m", "lm_m", marker.prefix), ".txt"), header = T)
+
+  maptab <- strsplit(marker.prefix, split = "_")[[1]]
+  maptab <- paste0("lm_", paste(maptab[2:length(maptab)], collapse = "_"), ".txt")
+  maptab <- read.table(maptab, header = T)
   head(maptab)
   maptab <- maptab[,c("Chr", "ID", "Position")]
   maptab$bp <- maptab$Position*1e6
-
   write.table(maptab, paste0(marker.prefix, ".map"), row.names = F, col.names = F, quote = F)
 
   # qtl
-  maptab <- read.table(paste0(gsub("p1_mrk", "lm_qtl", marker.prefix), ".txt"), header = T)
+  maptab <- strsplit(marker.prefix, split = "_")[[1]]
+  maptab <- paste0("lm_qtl_", paste(maptab[3:length(maptab)], collapse = "_"), ".txt")
+  maptab <- read.table(maptab, header = T)
   head(maptab)
   maptab <- maptab[,c("Chr", "ID", "Position")]
   maptab$bp <- maptab$Position*1e6
 
-  write.table(maptab, paste0(qtl.prefix, ".map"), row.names = F, col.names = F, quote = F)
 
   #~~ Add sex to PLINK
 
