@@ -133,7 +133,7 @@ parseQMSim <- function(markerfile = "p1_mrk_001.txt",
   head(maptab)
   maptab <- maptab[,c("Chr", "ID", "Position")]
   maptab$bp <- maptab$Position*1e6
-
+  write.table(maptab, paste0(qtl.prefix, ".map"), row.names = F, col.names = F, quote = F)
 
   #~~ Add sex to PLINK
 
@@ -192,11 +192,11 @@ parseQMSim <- function(markerfile = "p1_mrk_001.txt",
 
   #~~ Edit the map file
 
-  map.file  <- read.table(gsub("p1_", "lm_", paste0(marker.prefix, ".txt")), header = T, stringsAsFactors = F)
-  map.plink <- read.table(paste0(marker.prefix, "_merged.map"))
-
-  map.file <- subset(map.file, ID %in% map.plink$V2)
-  write.table(map.file, paste0("edited_", gsub("p1_", "lm_", paste0(marker.prefix, ".txt"))), row.names = F, quote = F)
+  # map.file  <- read.table(gsub("p1_", "lm_", paste0(marker.prefix, ".txt")), header = T, stringsAsFactors = F)
+  # map.plink <- read.table(paste0(marker.prefix, "_merged.map"))
+  #
+  # map.file <- subset(map.file, ID %in% map.plink$V2)
+  # write.table(map.file, paste0("edited_", gsub("p1_", "lm_", paste0(marker.prefix, ".txt"))), row.names = F, quote = F)
 
   #~~ DELETE UNNEEDED FILES
 
