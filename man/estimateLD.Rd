@@ -4,10 +4,11 @@
 \alias{estimateLD}
 \title{estimateAdjacentLD: Estimated LD (r2) between adjacent markers.}
 \usage{
-estimateLD(markerfile, adjacent.only = T, full.results = F,
-  ld.window.kb = 1000)
+estimateLD(markerfile, full.results = F, ld.window.kb = 1000)
 }
 \arguments{
+\item{markerfile}{Path to markerfile}
+
 \item{full.results}{Default FALSE. If TRUE, prints the table of LD measures
 between adjacent loci.}
 

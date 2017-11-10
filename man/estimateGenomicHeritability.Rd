@@ -7,6 +7,8 @@
 estimateGenomicHeritability(markerfile, merged = F)
 }
 \arguments{
+\item{markerfile}{Path to markerfile}
+
 \item{merged}{Default FALSE. If merged, will include the QTL markers.}
 }
 \description{

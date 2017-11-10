@@ -1,5 +1,5 @@
 #' estimateAdjacentLD: Estimated LD (r2) between adjacent markers.
-#' @param markerfile
+#' @param markerfile Path to markerfile
 #' @param full.results Default FALSE. If TRUE, prints the table of LD measures
 #'   between adjacent loci.
 #' @param ld.window.kb Default 1000. Maximum kb distance between which to
