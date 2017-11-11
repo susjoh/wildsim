@@ -4,10 +4,15 @@
 \alias{estimateGenomicHeritability}
 \title{estimateGenomicHeritability: create a kinship matrix using ibs in R}
 \usage{
-estimateGenomicHeritability(markerfile, merged = F)
+estimateGenomicHeritability(markerfile, snpvec = NULL, idvec = NULL,
+  outfile = NULL, merged = F)
 }
 \arguments{
 \item{markerfile}{Path to markerfile}
+
+\item{snpvec}{Vector of SNPs to include (all others excluded). Optional}
+
+\item{idvec}{Vector of IDs to include (all others excluded). Optional}
 
 \item{merged}{Default FALSE. If merged, will include the QTL markers.}
 }
