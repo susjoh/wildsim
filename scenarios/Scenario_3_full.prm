@@ -1,0 +1,123 @@
+/*******************************
+ **     Global parameters     **
+ *******************************/
+title = "Scenario_3_full";
+nrep  = 1;                    //Number of replicates
+h2    = 0.4;                  //Heritability
+qtlh2 = 0.4;                  //QTL heritability
+phvar = 1.0;                  //Phenotypic variance
+
+/*******************************
+ **   Historical population   **
+ *******************************/
+begin_hp;
+   hg_size = 10000 [0]          //Size of the historical generations
+             10000  [1000];
+end_hp;
+
+/*******************************
+ **        Populations        **
+ *******************************/
+
+begin_pop = "p1";
+   begin_founder;
+      male   [n =  25, pop = "hp"];
+      female [n = 25, pop = "hp"];
+   end_founder;
+   ls  = 1 2 [0.455] 4 [0.1] 6 [0.03] 8 [0.01] 10[0.005];                   //Litter size
+   pmp = 0.5 /fix;            //Proportion of male progeny
+   ng  = 50;                   //Number of generations
+   sr = 0.5;
+   dr = 0.5;
+   sd = rnd;
+   cd = age;
+   begin_popoutput;
+        data /gen 46 47 48 49 50;
+        genotype /gen 46 47 48 49 50;
+        allele_freq /gen 46 47 48 49 50;
+   end_popoutput;
+end_pop;
+
+begin_pop = "p2";
+   begin_founder;
+      male   [n =  25, pop = "hp"];
+      female [n = 25, pop = "hp"];
+   end_founder;
+   ls  = 1 2 [0.455] 4 [0.1] 6 [0.03] 8 [0.01] 10[0.005];                   //Litter size
+   pmp = 0.5 /fix;            //Proportion of male progeny
+   ng  = 50;                   //Number of generations
+   sr = 0.5;
+   dr = 0.5;
+   sd = rnd;
+   cd = age;
+   begin_popoutput;
+        data /gen 46 47 48 49 50;
+        genotype /gen 46 47 48 49 50;
+        allele_freq /gen 46 47 48 49 50;
+   end_popoutput;
+end_pop;
+
+begin_pop = "p3";
+   begin_founder;
+      male   [n =  25, pop = "hp"];
+      female [n = 25, pop = "hp"];
+   end_founder;
+   ls  = 1 2 [0.455] 4 [0.1] 6 [0.03] 8 [0.01] 10[0.005];                   //Litter size
+   pmp = 0.5 /fix;            //Proportion of male progeny
+   ng  = 50;                   //Number of generations
+   sr = 0.5;
+   dr = 0.5;
+   sd = rnd;
+   cd = age;
+   begin_popoutput;
+        data /gen 46 47 48 49 50;
+        genotype /gen 46 47 48 49 50;
+        allele_freq /gen 46 47 48 49 50;
+   end_popoutput;
+end_pop;
+
+begin_pop = "p4";
+   begin_founder;
+      male   [n =  25, pop = "hp"];
+      female [n = 25, pop = "hp"];
+   end_founder;
+   ls  = 1 2 [0.455] 4 [0.1] 6 [0.03] 8 [0.01] 10[0.005];                   //Litter size
+   pmp = 0.5 /fix;            //Proportion of male progeny
+   ng  = 50;                   //Number of generations
+   sr = 0.5;
+   dr = 0.5;
+   sd = rnd;
+   cd = age;
+   begin_popoutput;
+        data /gen 46 47 48 49 50;
+        genotype /gen 46 47 48 49 50;
+        allele_freq /gen 46 47 48 49 50;
+   end_popoutput;
+end_pop;
+
+/*******************************
+ **          Genome           **
+ *******************************/
+begin_genome;
+   begin_chr = 10;
+      chrlen = 100;           //Chromosome length
+      nmloci = 50000;           //Number of markers
+      mpos   = rnd;           //Marker positions
+      nma    = all 2;         //Number of marker alleles
+      maf    = rnd;           //Marker allele frequencies
+      nqloci = 1;            //Number of QTL
+      qpos   = rnd;           //QTL positions
+      nqa    = all 2;     //Number of QTL alleles
+      qaf    = rnd;           //QTL allele frequencies
+      qae    = rndg 5;      //QTL allele effects
+   end_chr;
+   select_seg_loci;         //only output polymorphic loci
+end_genome;
+
+/*******************************
+ **       Output options      **
+ *******************************/
+begin_output;
+	linkage_map;
+	output_folder = "Scenario_3/Scenario_3_full";
+end_output;

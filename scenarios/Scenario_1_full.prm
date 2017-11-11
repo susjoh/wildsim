@@ -1,0 +1,60 @@
+/*******************************
+ **     Global parameters     **
+ *******************************/
+title = "Scenario_1_full";
+nrep  = 1;                    //Number of replicates
+h2    = 0.4;                  //Heritability
+qtlh2 = 0.4;                  //QTL heritability
+phvar = 1.0;                  //Phenotypic variance
+
+/*******************************
+ **   Historical population   **
+ *******************************/
+begin_hp;
+   hg_size = 100000 [0]          //Size of the historical generations
+             100000  [1000];
+end_hp;
+
+/*******************************
+ **        Populations        **
+ *******************************/
+begin_pop = "p1";
+   begin_founder;
+      male   [n =  500, pop = "hp"];
+      female [n = 500, pop = "hp"];
+   end_founder;
+   ls  = 1 2 [0.455] 4 [0.1] 6 [0.03] 8 [0.01] 10[0.005];                   //Litter size
+   pmp = 0.5 /fix;            //Proportion of male progeny
+   ng  = 0;                   //Number of generations
+   begin_popoutput;
+        data /gen 0;
+        genotype /gen 0;
+        allele_freq /gen 0;
+   end_popoutput;
+end_pop;
+
+/*******************************
+ **          Genome           **
+ *******************************/
+begin_genome;
+   begin_chr = 10;
+      chrlen = 100;           //Chromosome length
+      nmloci = 50000;           //Number of markers
+      mpos   = rnd;           //Marker positions
+      nma    = all 2;         //Number of marker alleles
+      maf    = rnd;           //Marker allele frequencies
+      nqloci = 1;            //Number of QTL
+      qpos   = rnd;           //QTL positions
+      nqa    = all 2;     //Number of QTL alleles
+      qaf    = rnd;           //QTL allele frequencies
+      qae    = rndg 5;      //QTL allele effects
+   end_chr;
+end_genome;
+
+/*******************************
+ **       Output options      **
+ *******************************/
+begin_output;
+	linkage_map;
+	output_folder = "Scenario_1/Scenario_1_full";
+end_output;
