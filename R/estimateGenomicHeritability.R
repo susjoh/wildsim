@@ -17,7 +17,9 @@ estimateGenomicHeritability <- function(markerfile, snpvec = NULL, idvec = NULL,
 
   if(is.null(outfile)) outfile <- marker.prefix
   if(!is.null(snpvec)) writeLines(snpvec, paste0(marker.prefix, ".snpvec"))
-  if(!is.null(idvec )) writeLines(idvec, paste0(marker.prefix, ".idvec"))
+  if(!is.null(idvec )) write.table(data.frame(Family = 1, ID = idvec),
+                                   paste0(marker.prefix, ".idvec"),
+                                   row.names = F, col.names = F, quote = F)
 
   extra.piece <- paste(c(ifelse(!is.null(snpvec), paste0(" --extract ", marker.prefix, ".snpvec"), ""),
                          ifelse(!is.null(idvec), paste0(" --keep ", marker.prefix, ".idvec"), "")), collapse = " ")
