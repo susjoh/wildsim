@@ -14,15 +14,21 @@ estimateQTLEffects <- function(markerfile, phenofile, flanking.window, merged = 
   require(evaluate)
 
   marker.prefix <- gsub(".txt", "", markerfile)
+  temp <- gsub("\\\\", "/", marker.prefix)
+  temp <- strsplit(temp, "/")[[1]]
+  temp2 <- strsplit(temp[length(temp)], split = "_")[[1]]
+  temp2 <- paste0("lm_qtl_", temp2[length(temp2)])
+  temp <- paste(temp[-length(temp)], collapse = "/")
+  tempname <- paste(c(temp, temp2), collapse = "/")
 
-
-  qtl.positions <- read.table(paste0(gsub("p1_mrk", "lm_qtl", marker.prefix), ".txt"), header = T, stringsAsFactors = F)
-  qtl.effects   <- read.table(paste0(gsub("p1_mrk", "p1_freq_qtl", marker.prefix), ".txt"), header = T, fill = T)
+  qtl.positions <- read.table(paste0(tempname, ".txt"), header = T, stringsAsFactors = F)
+  qtl.effects   <- read.table(paste0(gsub("_mrk", "_freq_qtl", marker.prefix), ".txt"), header = T, fill = T)
   names(qtl.effects) <- c("ID", "Gen", "Chr", "Var", "Allele.Freq.1", "Allele.Freq.2")
   qtl.positions$BP <- qtl.positions$Position * 1e6
   qtl.positions <- join(qtl.positions, qtl.effects)
 
   qtl.positions
+  rm(temp, temp2)
 
 
   #~~ Are there multiple generations in the QTL effect file? At this stage, just take the weighted mean...
@@ -39,9 +45,21 @@ estimateQTLEffects <- function(markerfile, phenofile, flanking.window, merged = 
     rm(temp)
 
     new.qtl <- NULL
+
+    qtl.positions$Allele.Freq.1 <- as.character(qtl.positions$Allele.Freq.1)
+    qtl.positions$Allele.Freq.2 <- as.character(qtl.positions$Allele.Freq.2)
+
+    two.vec <- grep("2:", qtl.positions$Allele.Freq.1)
+    if(length(two.vec > 0)){
+      qtl.positions$Allele.Freq.2[two.vec] <- qtl.positions$Allele.Freq.1[two.vec]
+      qtl.positions$Allele.Freq.1[two.vec] <- ""
+    }
+
     for(i in unique(qtl.positions$ID)){
 
       temp <- subset(qtl.positions, ID == i)
+      temp$Allele.Freq.1 <- ifelse(temp$Allele.Freq.1 == "", 0, temp$Allele.Freq.1)
+      temp$Allele.Freq.2 <- ifelse(temp$Allele.Freq.2 == "", 0, temp$Allele.Freq.2)
       temp2 <- data.frame(Var = mean(temp$Var, weights = temp$N),
                           Allele.Freq.1 = mean(as.numeric(gsub("1:", "", temp$Allele.Freq.1)), weights = temp$N),
                           Allele.Freq.2 = mean(as.numeric(gsub("2:", "", temp$Allele.Freq.2)), weights = temp$N),
@@ -55,10 +73,6 @@ estimateQTLEffects <- function(markerfile, phenofile, flanking.window, merged = 
     qtl.positions <- new.qtl
     rm(new.qtl)
   }
-
-
-
-
 
   #~~ First, run the regions in the dataset that does not include the QTL.
 
@@ -76,8 +90,16 @@ estimateQTLEffects <- function(markerfile, phenofile, flanking.window, merged = 
   qtl.positions$LogL <- NA
   qtl.positions$qtl.error <- NA
 
-  map.file <- read.table(gsub("p1_", "edited_lm_", paste0(marker.prefix, ".txt")), header = T, stringsAsFactors = F)
-  map.file$BP <- map.file$Position*1e6
+  marker.prefix
+
+  RunPLINK(paste0("--bfile ", marker.prefix, " --recode --out ", marker.prefix))
+  map.file <- read.table(paste0(marker.prefix, ".map"))
+  system(paste0("rm ", marker.prefix, ".ped"))
+  system(paste0("rm ", marker.prefix, ".map"))
+
+  head(map.file)
+  map.file <- map.file[,c(2, 1, 3, 4)]
+  names(map.file) <- c("ID", "Chr", "Position", "BP")
 
   if(merged){
     map.file <- rbind(map.file, qtl.positions[,1:4])
