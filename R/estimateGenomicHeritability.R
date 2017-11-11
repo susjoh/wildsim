@@ -50,6 +50,9 @@ estimateGenomicHeritability <- function(markerfile, merged = F){
   gcta.res$Source[which(gcta.res$variable == "SE")] <- paste0(gcta.res$Source[which(gcta.res$variable == "SE")], ".SE")
   gcta.res <- arrange(gcta.res, Source)
   gcta.res <- gcta.res[, -2]
+  name.vec <- gcta.res[,1]
+  gcta.res <- data.frame(t(gcta.res[,2]))
+  names(gcta.res) <- name.vec
   gcta.res
 
 }
