@@ -1,6 +1,8 @@
 #' estimateQTLEffects: estimate variance attributed to simulated QTLs
 #' @param markerfile string
 #' @param phenofile string
+#' @param gwaa.data GenABEL gwaa.data set, optional. If specified, map positions
+#'   are taken from here.
 #' @param flanking.window integer. Number of SNPs flanking the QTL for
 #'   estimation of effect sizes
 #' @param merged Boolean, FALSE. If TRUE, include the quantitative trait
@@ -8,7 +10,7 @@
 #' @export
 #'
 
-estimateQTLEffects <- function(markerfile, phenofile, flanking.window, merged = F){
+estimateQTLEffects <- function(markerfile, phenofile, gwaa.data = NULL, flanking.window, merged = F){
 
   require(plyr)
   require(evaluate)
@@ -90,16 +92,23 @@ estimateQTLEffects <- function(markerfile, phenofile, flanking.window, merged = 
   qtl.positions$LogL <- NA
   qtl.positions$qtl.error <- NA
 
-  marker.prefix
 
-  RunPLINK(paste0("--bfile ", marker.prefix, " --recode --out ", marker.prefix))
-  map.file <- read.table(paste0(marker.prefix, ".map"))
-  system(paste0("rm ", marker.prefix, ".ped"))
-  system(paste0("rm ", marker.prefix, ".map"))
+  if(is.null(gwaa.data)){
+    RunPLINK(paste0("--bfile ", marker.prefix, " --recode --out ", marker.prefix))
+    map.file <- read.table(paste0(marker.prefix, ".map"))
+    system(paste0("rm ", marker.prefix, ".ped"))
+    system(paste0("rm ", marker.prefix, ".map"))
 
-  head(map.file)
-  map.file <- map.file[,c(2, 1, 3, 4)]
-  names(map.file) <- c("ID", "Chr", "Position", "BP")
+    head(map.file)
+    map.file <- map.file[,c(2, 1, 3, 4)]
+    names(map.file) <- c("ID", "Chr", "Position", "BP")
+  } else {
+    map.file <- data.frame(ID = snpnames(gwaa.data),
+                           Chr = chromosome(gwaa.data),
+                           Position = map(gwaa.data)/1e6,
+                           BP = map(gwaa.data))
+
+  }
 
   if(merged){
     map.file <- rbind(map.file, qtl.positions[,1:4])
