@@ -7,6 +7,9 @@
 #'   the full data set.
 #' @param createQTLMerged boolean. Default TRUE. Creates files with ("_merged")
 #'   and without the simulated quantitative trait loci.
+#' @import GenABEL
+#' @import plyr
+#' @import ggplot2
 #' @export
 #'
 
