@@ -1,12 +1,15 @@
 #' estimateGenomicHeritability: create a kinship matrix using ibs in R
 #' @param markerfile Path to markerfile
 #' @param merged Default FALSE. If merged, will include the QTL markers.
+#' @import reshape
+#' @import plyr
 #' @export
 #'
 
-
-
 estimateGenomicHeritability <- function(markerfile, merged = F){
+
+  require(reshape)
+  require(plyr)
 
   marker.prefix <- gsub(".txt", "", markerfile)
 
@@ -36,8 +39,17 @@ estimateGenomicHeritability <- function(markerfile, merged = F){
                    marker.prefix, ".phenochange.txt --reml --out ",
                    marker.prefix, "_merged_GRM_res"))
 
-    gcta.res.merged <- read.table(paste0(marker.prefix, "_merged_GRM_res.hsq"), header = T, sep = "\t", fill = T)
-    gcta.res.merged
+    gcta.res <- read.table(paste0(marker.prefix, "_merged_GRM_res.hsq"), header = T, sep = "\t", fill = T)
+    gcta.res
 
   }
+
+  gcta.res <- melt(gcta.res, id.vars = "Source")
+  gcta.res$Source <- as.character(gcta.res$Source)
+  gcta.res <- subset(gcta.res, !is.na(value))
+  gcta.res$Source[which(gcta.res$variable == "SE")] <- paste0(gcta.res$Source[which(gcta.res$variable == "SE")], ".SE")
+  gcta.res <- arrange(gcta.res, Source)
+  gcta.res <- gcta.res[, -2]
+  gcta.res
+
 }
