@@ -78,6 +78,7 @@ estimateQTLEffects <- function(markerfile, phenofile, gwaa.data = NULL, flanking
 
   #~~ First, run the regions in the dataset that does not include the QTL.
 
+  qtl.positions$Flanking.Window <- flanking.window
   qtl.positions$QTL.Position <- NA
   qtl.positions$Vqtl <- NA
   qtl.positions$Vqtl.SE <- NA
