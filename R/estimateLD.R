@@ -1,5 +1,7 @@
-#' estimateAdjacentLD: Estimated LD (r2) between adjacent markers.
+#' estimateLD: Estimated LD (r2) between adjacent markers.
 #' @param markerfile Path to markerfile
+#' @param snpvec Vector of SNPs to include (all others excluded). Optional
+#' @param idvec Vector of IDs to include (all others excluded). Optional
 #' @param full.results Default FALSE. If TRUE, prints the table of LD measures
 #'   between adjacent loci.
 #' @param ld.window.kb Default 1000. Maximum kb distance between which to
@@ -9,11 +11,20 @@
 #'
 
 
-estimateLD <- function(markerfile, full.results = F, ld.window.kb = 1000){
+estimateLD <- function(markerfile, snpvec = NULL, idvec = NULL, full.results = F, ld.window.kb = 1000, outfile = NULL){
 
   marker.prefix <- gsub(".txt", "", markerfile)
 
-  RunPLINK(paste0("--bfile ", marker.prefix, " --ld-window-r2 0 --ld-window-kb ", ld.window.kb, " --r2 yes-really --out ", marker.prefix))
+  if(is.null(outfile)) outfile <- marker.prefix
+  if(!is.null(snpvec)) writeLines(snpvec, paste0(outfile, ".snpvec"))
+  if(!is.null(idvec )) write.table(data.frame(Family = 1, ID = idvec),
+                                   paste0(outfile, ".idvec"),
+                                   row.names = F, col.names = F, quote = F)
+
+  extra.piece <- paste(c(ifelse(!is.null(snpvec), paste0(" --extract ", outfile, ".snpvec"), ""),
+                         ifelse(!is.null(idvec), paste0(" --keep ", outfile, ".idvec"), "")), collapse = " ")
+
+  RunPLINK(paste0("--bfile ", marker.prefix, " --ld-window-r2 0 --ld-window-kb ", ld.window.kb, extra.piece, " --r2 yes-really --out ", marker.prefix))
 
   ld.tab <- read.table(paste0(marker.prefix, ".ld"), header = T, stringsAsFactors = F)
   ld.tab$SNP_A <- as.numeric(gsub("M", "", ld.tab$SNP_A))

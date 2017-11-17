@@ -3,6 +3,7 @@
 #' @param phenofile string
 #' @param gwaa.data GenABEL gwaa.data set, optional. If specified, map positions
 #'   are taken from here.
+#' @param idvec Vector of IDs to include (all others excluded). Optional
 #' @param flanking.window integer. Number of SNPs flanking the QTL for
 #'   estimation of effect sizes
 #' @param merged Boolean, FALSE. If TRUE, include the quantitative trait
@@ -10,7 +11,7 @@
 #' @export
 #'
 
-estimateQTLEffects <- function(markerfile, phenofile, gwaa.data = NULL, flanking.window, merged = F){
+estimateQTLEffects <- function(markerfile, phenofile, gwaa.data = NULL, idvec = NULL, flanking.window, outfile = NULL, merged = F){
 
   require(plyr)
   require(evaluate)
@@ -22,6 +23,16 @@ estimateQTLEffects <- function(markerfile, phenofile, gwaa.data = NULL, flanking
   temp2 <- paste0("lm_qtl_", temp2[length(temp2)])
   temp <- paste(temp[-length(temp)], collapse = "/")
   tempname <- paste(c(temp, temp2), collapse = "/")
+
+  if(is.null(outfile)) outfile <- marker.prefix
+  if(!is.null(idvec )) write.table(data.frame(Family = 1, ID = idvec),
+                                   paste0(outfile, ".idvec"),
+                                   row.names = F, col.names = F, quote = F)
+
+  extra.piece <- paste(c(ifelse(!is.null(snpvec), paste0(" --extract ", outfile, ".snpvec"), ""),
+                         ifelse(!is.null(idvec), paste0(" --keep ", outfile, ".idvec"), "")), collapse = " ")
+
+
 
   qtl.positions <- read.table(paste0(tempname, ".txt"), header = T, stringsAsFactors = F)
   qtl.effects   <- read.table(paste0(gsub("_mrk", "_freq_qtl", marker.prefix), ".txt"), header = T, fill = T)
@@ -120,9 +131,11 @@ estimateQTLEffects <- function(markerfile, phenofile, gwaa.data = NULL, flanking
 
     x <- subset(map.file, Chr == qtl.positions$Chr[i])
 
+    x <- arrange(x, Position)
+
     focal.snp <- which(x$BP > qtl.positions$BP[i])[1]
 
-    qtl.positions$QTL.Position[i] <- x$ID[focal.snp]
+    qtl.positions$QTL.Position[i] <- as.character(x$ID[focal.snp])
 
     if(merged){
       start.pos <- (focal.snp - flanking.window)

@@ -4,8 +4,8 @@
 \alias{estimateQTLEffects}
 \title{estimateQTLEffects: estimate variance attributed to simulated QTLs}
 \usage{
-estimateQTLEffects(markerfile, phenofile, gwaa.data = NULL, flanking.window,
-  merged = F)
+estimateQTLEffects(markerfile, phenofile, gwaa.data = NULL, idvec = NULL,
+  flanking.window, outfile = NULL, merged = F)
 }
 \arguments{
 \item{markerfile}{string}
@@ -14,6 +14,8 @@ estimateQTLEffects(markerfile, phenofile, gwaa.data = NULL, flanking.window,
 
 \item{gwaa.data}{GenABEL gwaa.data set, optional. If specified, map positions
 are taken from here.}
+
+\item{idvec}{Vector of IDs to include (all others excluded). Optional}
 
 \item{flanking.window}{integer. Number of SNPs flanking the QTL for
 estimation of effect sizes}

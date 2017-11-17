@@ -16,13 +16,13 @@ estimateGenomicHeritability <- function(markerfile, snpvec = NULL, idvec = NULL,
   marker.prefix <- gsub(".txt", "", markerfile)
 
   if(is.null(outfile)) outfile <- marker.prefix
-  if(!is.null(snpvec)) writeLines(snpvec, paste0(marker.prefix, ".snpvec"))
+  if(!is.null(snpvec)) writeLines(snpvec, paste0(outfile, ".snpvec"))
   if(!is.null(idvec )) write.table(data.frame(Family = 1, ID = idvec),
-                                   paste0(marker.prefix, ".idvec"),
+                                   paste0(outfile, ".idvec"),
                                    row.names = F, col.names = F, quote = F)
 
-  extra.piece <- paste(c(ifelse(!is.null(snpvec), paste0(" --extract ", marker.prefix, ".snpvec"), ""),
-                         ifelse(!is.null(idvec), paste0(" --keep ", marker.prefix, ".idvec"), "")), collapse = " ")
+  extra.piece <- paste(c(ifelse(!is.null(snpvec), paste0(" --extract ", outfile, ".snpvec"), ""),
+                         ifelse(!is.null(idvec), paste0(" --keep ", outfile, ".idvec"), "")), collapse = " ")
 
   if(!merged){
 

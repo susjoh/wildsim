@@ -2,12 +2,17 @@
 % Please edit documentation in R/estimateAdjacentLD.R
 \name{estimateLD}
 \alias{estimateLD}
-\title{estimateAdjacentLD: Estimated LD (r2) between adjacent markers.}
+\title{estimateLD: Estimated LD (r2) between adjacent markers.}
 \usage{
-estimateLD(markerfile, full.results = F, ld.window.kb = 1000)
+estimateLD(markerfile, snpvec = NULL, idvec = NULL, full.results = F,
+  ld.window.kb = 1000, outfile = NULL)
 }
 \arguments{
 \item{markerfile}{Path to markerfile}
+
+\item{snpvec}{Vector of SNPs to include (all others excluded). Optional}
+
+\item{idvec}{Vector of IDs to include (all others excluded). Optional}
 
 \item{full.results}{Default FALSE. If TRUE, prints the table of LD measures
 between adjacent loci.}
@@ -17,5 +22,5 @@ measure LD. Higher values will ensure all loci are captured, but will take
 longer.}
 }
 \description{
-estimateAdjacentLD: Estimated LD (r2) between adjacent markers.
+estimateLD: Estimated LD (r2) between adjacent markers.
 }
