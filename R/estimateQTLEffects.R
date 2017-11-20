@@ -165,8 +165,8 @@ estimateQTLEffects <- function(markerfile, phenofile, gwaa.data = NULL, idvec = 
     write.table(rest.list, paste0(marker.prefix, snp.list.rng, ".restlist.", i, ".txt"), row.names = F, col.names = F, quote = F)
 
 
-    RunGCTA(paste0("--bfile ", marker.prefix, "_merged --make-grm-gz --extract ", marker.prefix, snp.list.rng, ".snplist.", i, ".txt --out ", marker.prefix, snp.list.rng, ".snplist.", i , "_GRM"))
-    RunGCTA(paste0("--bfile ", marker.prefix, "_merged --make-grm-gz --extract ", marker.prefix, snp.list.rng, ".restlist.", i, ".txt --out ", marker.prefix, snp.list.rng, ".snplist.", i , "_wo_GRM"))
+    RunGCTA(paste0("--bfile ", marker.prefix, "_merged --make-grm-gz --keep ", outfile, ".idvec --extract ", marker.prefix, snp.list.rng, ".snplist.", i, ".txt --out ", marker.prefix, snp.list.rng, ".snplist.", i , "_GRM"))
+    RunGCTA(paste0("--bfile ", marker.prefix, "_merged --make-grm-gz --keep ", outfile, ".idvec --extract ", marker.prefix, snp.list.rng, ".restlist.", i, ".txt --out ", marker.prefix, snp.list.rng, ".snplist.", i , "_wo_GRM"))
 
     writeLines(paste0(marker.prefix, snp.list.rng, ".snplist.", i , "_GRM\n",
                       marker.prefix, snp.list.rng, ".snplist.", i , "_wo_GRM"),
