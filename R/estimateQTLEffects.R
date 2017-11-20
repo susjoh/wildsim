@@ -157,7 +157,7 @@ estimateQTLEffects <- function(markerfile, phenofile, gwaa.data = NULL, idvec = 
 
     snp.list <- as.character(x$ID[start.pos:stop.pos])
 
-    rest.list <- as.character(subset(map.file, !ID %in% snp.list)$ID)
+    rest.list <- unique(as.character(subset(map.file, !ID %in% snp.list)$ID))
 
 
     snp.list.rng <- paste0(".", paste0(sample(letters, 10, replace = T), collapse = ""), collapse = "")
