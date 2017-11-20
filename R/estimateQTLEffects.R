@@ -156,22 +156,25 @@ estimateQTLEffects <- function(markerfile, phenofile, gwaa.data = NULL, idvec = 
     }
 
     snp.list <- x$ID[start.pos:stop.pos]
-    write.table(snp.list, paste0(marker.prefix, ".snplist.", i, ".txt"), row.names = F, col.names = F, quote = F)
 
-    RunGCTA(paste0("--bfile ", marker.prefix, "_merged --make-grm-gz --extract ", marker.prefix, ".snplist.", i, ".txt --out ", marker.prefix, ".snplist.", i , "_GRM"))
-    RunGCTA(paste0("--bfile ", marker.prefix, "_merged --make-grm-gz --exclude ", marker.prefix, ".snplist.", i, ".txt --out ", marker.prefix, ".snplist.", i , "_wo_GRM"))
+    snp.list.rng <- paste0(".", paste0(sample(letters, 10, replace = T), collapse = ""), collapse = "")
 
-    writeLines(paste0(marker.prefix, ".snplist.", i , "_GRM\n",
-                      marker.prefix, ".snplist.", i , "_wo_GRM"),
-               paste0(marker.prefix, ".snplist.", i , "_GRMs.txt"))
+    write.table(snp.list, paste0(marker.prefix, snp.list.rng, ".snplist.", i, ".txt"), row.names = F, col.names = F, quote = F)
+
+    RunGCTA(paste0("--bfile ", marker.prefix, "_merged --make-grm-gz --extract ", marker.prefix, snp.list.rng, ".snplist.", i, ".txt --out ", marker.prefix, snp.list.rng, ".snplist.", i , "_GRM"))
+    RunGCTA(paste0("--bfile ", marker.prefix, "_merged --make-grm-gz --exclude ", marker.prefix, snp.list.rng, ".snplist.", i, ".txt --out ", marker.prefix, snp.list.rng, ".snplist.", i , "_wo_GRM"))
+
+    writeLines(paste0(marker.prefix, snp.list.rng, ".snplist.", i , "_GRM\n",
+                      marker.prefix, snp.list.rng, ".snplist.", i , "_wo_GRM"),
+               paste0(marker.prefix, snp.list.rng, ".snplist.", i , "_GRMs.txt"))
 
 
-    y <- evaluate("RunGCTA(paste0(\"--mgrm-gz \", marker.prefix, \".snplist.\", i , \"_GRMs.txt --reml-maxit 1000  --pheno \", marker.prefix, \".phenochange.txt --reml --out \", marker.prefix, \"_GRMs_res\"))")
+    y <- evaluate("RunGCTA(paste0(\"--mgrm-gz \", marker.prefix, snp.list.rng, \".snplist.\", i , \"_GRMs.txt --reml-maxit 1000  --pheno \", marker.prefix, \".phenochange.txt --reml --out \", marker.prefix, snp.list.rng,  \"_GRMs_res\"))")
 
     if(length(y) == 1) qtl.positions$qtl.error[i] <- "none"
 
     if(length(y) == 2){
-      y <- evaluate("RunGCTA(paste0(\"--mgrm-gz \", marker.prefix, \".snplist.\", i , \"_GRMs.txt --reml-no-constrain --reml-maxit 1000  --pheno \", marker.prefix, \".phenochange.txt --reml --out \", marker.prefix, \"_GRMs_res\"))")
+      y <- evaluate("RunGCTA(paste0(\"--mgrm-gz \", marker.prefix, snp.list.rng,  \".snplist.\", i , \"_GRMs.txt --reml-no-constrain --reml-maxit 1000  --pheno \", marker.prefix, \".phenochange.txt --reml --out \", marker.prefix, snp.list.rng,  \"_GRMs_res\"))")
     }
 
     if(length(y) == 1) qtl.positions$qtl.error[i] <- "none"
@@ -179,8 +182,8 @@ estimateQTLEffects <- function(markerfile, phenofile, gwaa.data = NULL, idvec = 
 
 
 
-    if(file.exists(paste0(marker.prefix, "_GRMs_res.hsq"))){
-      gcta.res.temp <- read.table(paste0(marker.prefix, "_GRMs_res.hsq"), header = T, sep = "\t", fill = T)
+    if(file.exists(paste0(marker.prefix, snp.list.rng, "_GRMs_res.hsq"))){
+      gcta.res.temp <- read.table(paste0(marker.prefix, snp.list.rng, "_GRMs_res.hsq"), header = T, sep = "\t", fill = T)
 
       qtl.positions$Vqtl[i]    <- gcta.res.temp[1,2]
       qtl.positions$Vqtl.SE[i] <- gcta.res.temp[1,3]
@@ -196,7 +199,7 @@ estimateQTLEffects <- function(markerfile, phenofile, gwaa.data = NULL, idvec = 
 
     }
 
-    system(paste0("rm ", marker.prefix, ".snplist.", i , "*"))
+    system(paste0("rm ", marker.prefix, snp.list.rng, ".snplist.", i , "*"))
 
   }
   qtl.positions
