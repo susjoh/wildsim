@@ -24,9 +24,12 @@ estimateLD <- function(markerfile, snpvec = NULL, idvec = NULL, full.results = F
   extra.piece <- paste(c(ifelse(!is.null(snpvec), paste0(" --extract ", outfile, ".snpvec"), ""),
                          ifelse(!is.null(idvec), paste0(" --keep ", outfile, ".idvec"), "")), collapse = " ")
 
-  RunPLINK(paste0("--bfile ", marker.prefix, " --ld-window-r2 0 --ld-window-kb ", ld.window.kb, extra.piece, " --r2 yes-really --out ", marker.prefix))
+  snp.list.rng <- paste0(sample(letters, 10, replace = T), collapse = "")
 
-  ld.tab <- read.table(paste0(marker.prefix, ".ld"), header = T, stringsAsFactors = F)
+
+  RunPLINK(paste0("--bfile ", marker.prefix, " --ld-window-r2 0 --ld-window-kb ", ld.window.kb, extra.piece, " --r2 yes-really --out ", snp.list.rng))
+
+  ld.tab <- read.table(paste0(snp.list.rng, ".ld"), header = T, stringsAsFactors = F)
   ld.tab$SNP_A <- as.numeric(gsub("M", "", ld.tab$SNP_A))
   ld.tab$SNP_B <- as.numeric(gsub("M", "", ld.tab$SNP_B))
 
@@ -50,6 +53,6 @@ estimateLD <- function(markerfile, snpvec = NULL, idvec = NULL, full.results = F
   }
 
 
-  system(paste0("rm ", marker.prefix, ".ld"))
+  system(paste0("rm ", snp.list.rng, ".ld"))
 
 }

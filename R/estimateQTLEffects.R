@@ -11,7 +11,7 @@
 #' @export
 #'
 
-estimateQTLEffects <- function(markerfile, phenofile, gwaa.data = NULL, idvec = NULL, flanking.window, outfile = NULL, merged = F){
+estimateQTLEffects <- function(markerfile, phenofile, gwaa.data = NULL, idvec = NULL, flanking.window, outfile = NULL, merged = F, variance.threshold = 0){
 
   require(plyr)
   require(evaluate)
@@ -127,7 +127,10 @@ estimateQTLEffects <- function(markerfile, phenofile, gwaa.data = NULL, idvec = 
     map.file <- arrange(map.file, Chr, Position)
   }
 
+  map.file <- unique(map.file)
+
   for(i in 1:nrow(qtl.positions)){
+
 
     x <- subset(map.file, Chr == qtl.positions$Chr[i])
 
@@ -137,77 +140,84 @@ estimateQTLEffects <- function(markerfile, phenofile, gwaa.data = NULL, idvec = 
 
     qtl.positions$QTL.Position[i] <- as.character(x$ID[focal.snp])
 
-    if(merged){
-      start.pos <- (focal.snp - flanking.window)
-    } else {
-      start.pos <- (focal.snp - flanking.window + 1)
+    if(qtl.positions$Var[i] > variance.threshold){
+
+
+      if(merged){
+        start.pos <- (focal.snp - flanking.window)
+      } else {
+        start.pos <- (focal.snp - flanking.window + 1)
+      }
+      stop.pos  <- (focal.snp + flanking.window)
+
+
+      if(start.pos < 1){
+        start.pos <- 1
+        stop.pos <- flanking.window*2
+      }
+
+      if(stop.pos > nrow(x)){
+        start.pos <- nrow(x) - (flanking.window*2)
+        stop.pos <- nrow(x)
+      }
+
+      snp.list <- as.character(x$ID[start.pos:stop.pos])
+      if(merged == F & length(grep("Q", snp.list) > 0)) snp.list <- snp.list[-grep("Q", snp.list)]
+
+
+      rest.list <- unique(as.character(subset(map.file, !ID %in% snp.list)$ID))
+      if(merged == F & length(grep("Q", rest.list) > 0)) rest.list <- rest.list[-grep("Q", rest.list)]
+
+
+      snp.list.rng <- paste0(".", paste0(sample(letters, 10, replace = T), collapse = ""), collapse = "")
+
+      write.table(snp.list, paste0(marker.prefix, snp.list.rng, ".snplist.", i, ".txt"), row.names = F, col.names = F, quote = F)
+      write.table(rest.list, paste0(marker.prefix, snp.list.rng, ".restlist.", i, ".txt"), row.names = F, col.names = F, quote = F)
+
+
+      RunGCTA(paste0("--bfile ", marker.prefix, "_merged --make-grm-gz --keep ", outfile, ".idvec --extract ", marker.prefix, snp.list.rng, ".snplist.", i, ".txt --out ", marker.prefix, snp.list.rng, ".snplist.", i , "_GRM"))
+      RunGCTA(paste0("--bfile ", marker.prefix, "_merged --make-grm-gz --keep ", outfile, ".idvec --extract ", marker.prefix, snp.list.rng, ".restlist.", i, ".txt --out ", marker.prefix, snp.list.rng, ".snplist.", i , "_wo_GRM"))
+
+      writeLines(paste0(marker.prefix, snp.list.rng, ".snplist.", i , "_GRM\n",
+                        marker.prefix, snp.list.rng, ".snplist.", i , "_wo_GRM"),
+                 paste0(marker.prefix, snp.list.rng, ".snplist.", i , "_GRMs.txt"))
+
+
+      y <- evaluate("RunGCTA(paste0(\"--mgrm-gz \", marker.prefix, snp.list.rng, \".snplist.\", i , \"_GRMs.txt --reml-maxit 1000  --pheno \", marker.prefix, \".phenochange.txt --reml --out \", marker.prefix, snp.list.rng,  \"_GRMs_res\"))")
+
+      if(length(y) == 1) qtl.positions$qtl.error[i] <- "none"
+
+      if(length(y) == 2){
+        y <- evaluate("RunGCTA(paste0(\"--mgrm-gz \", marker.prefix, snp.list.rng,  \".snplist.\", i , \"_GRMs.txt --reml-no-constrain --reml-maxit 1000  --pheno \", marker.prefix, \".phenochange.txt --reml --out \", marker.prefix, snp.list.rng,  \"_GRMs_res\"))")
+      }
+
+      if(length(y) == 1) qtl.positions$qtl.error[i] <- "none"
+      if(length(y) == 2) qtl.positions$qtl.error[i] <- "boundary"
+
+
+
+      if(file.exists(paste0(marker.prefix, snp.list.rng, "_GRMs_res.hsq"))){
+        gcta.res.temp <- read.table(paste0(marker.prefix, snp.list.rng, "_GRMs_res.hsq"), header = T, sep = "\t", fill = T)
+
+        qtl.positions$Vqtl[i]    <- gcta.res.temp[1,2]
+        qtl.positions$Vqtl.SE[i] <- gcta.res.temp[1,3]
+        qtl.positions$Va[i]      <- gcta.res.temp[2,2]
+        qtl.positions$Va.SE[i]   <- gcta.res.temp[2,3]
+        qtl.positions$Vp[i]      <- gcta.res.temp[4,2]
+        qtl.positions$Vp.SE[i]   <- gcta.res.temp[4,3]
+        qtl.positions$qtl2[i]    <- gcta.res.temp[5,2]
+        qtl.positions$qtl2.SE[i] <- gcta.res.temp[5,3]
+        qtl.positions$h2[i]      <- gcta.res.temp[6,2]
+        qtl.positions$h2.SE[i]   <- gcta.res.temp[6,3]
+        qtl.positions$LogL[i]    <- gcta.res.temp[8,2]
+
+      }
+
+      system("rm Rplots*")
+      system(paste0("rm ", marker.prefix, snp.list.rng, ".snplist.", i , "*"))
+      system(paste0("rm ", marker.prefix, snp.list.rng, ".restlist.", i , "*"))
+      system(paste0("rm ", marker.prefix, snp.list.rng, "_GRMs_res.hsq"))
     }
-    stop.pos  <- (focal.snp + flanking.window)
-
-
-    if(start.pos < 1){
-      start.pos <- 1
-      stop.pos <- flanking.window*2
-    }
-
-    if(stop.pos > nrow(x)){
-      start.pos <- nrow(x) - (flanking.window*2)
-      stop.pos <- nrow(x)
-    }
-
-    snp.list <- as.character(x$ID[start.pos:stop.pos])
-
-    rest.list <- unique(as.character(subset(map.file, !ID %in% snp.list)$ID))
-
-
-    snp.list.rng <- paste0(".", paste0(sample(letters, 10, replace = T), collapse = ""), collapse = "")
-
-    write.table(snp.list, paste0(marker.prefix, snp.list.rng, ".snplist.", i, ".txt"), row.names = F, col.names = F, quote = F)
-    write.table(rest.list, paste0(marker.prefix, snp.list.rng, ".restlist.", i, ".txt"), row.names = F, col.names = F, quote = F)
-
-
-    RunGCTA(paste0("--bfile ", marker.prefix, "_merged --make-grm-gz --keep ", outfile, ".idvec --extract ", marker.prefix, snp.list.rng, ".snplist.", i, ".txt --out ", marker.prefix, snp.list.rng, ".snplist.", i , "_GRM"))
-    RunGCTA(paste0("--bfile ", marker.prefix, "_merged --make-grm-gz --keep ", outfile, ".idvec --extract ", marker.prefix, snp.list.rng, ".restlist.", i, ".txt --out ", marker.prefix, snp.list.rng, ".snplist.", i , "_wo_GRM"))
-
-    writeLines(paste0(marker.prefix, snp.list.rng, ".snplist.", i , "_GRM\n",
-                      marker.prefix, snp.list.rng, ".snplist.", i , "_wo_GRM"),
-               paste0(marker.prefix, snp.list.rng, ".snplist.", i , "_GRMs.txt"))
-
-
-    y <- evaluate("RunGCTA(paste0(\"--mgrm-gz \", marker.prefix, snp.list.rng, \".snplist.\", i , \"_GRMs.txt --reml-maxit 1000  --pheno \", marker.prefix, \".phenochange.txt --reml --out \", marker.prefix, snp.list.rng,  \"_GRMs_res\"))")
-
-    if(length(y) == 1) qtl.positions$qtl.error[i] <- "none"
-
-    if(length(y) == 2){
-      y <- evaluate("RunGCTA(paste0(\"--mgrm-gz \", marker.prefix, snp.list.rng,  \".snplist.\", i , \"_GRMs.txt --reml-no-constrain --reml-maxit 1000  --pheno \", marker.prefix, \".phenochange.txt --reml --out \", marker.prefix, snp.list.rng,  \"_GRMs_res\"))")
-    }
-
-    if(length(y) == 1) qtl.positions$qtl.error[i] <- "none"
-    if(length(y) == 2) qtl.positions$qtl.error[i] <- "boundary"
-
-
-
-    if(file.exists(paste0(marker.prefix, snp.list.rng, "_GRMs_res.hsq"))){
-      gcta.res.temp <- read.table(paste0(marker.prefix, snp.list.rng, "_GRMs_res.hsq"), header = T, sep = "\t", fill = T)
-
-      qtl.positions$Vqtl[i]    <- gcta.res.temp[1,2]
-      qtl.positions$Vqtl.SE[i] <- gcta.res.temp[1,3]
-      qtl.positions$Va[i]      <- gcta.res.temp[2,2]
-      qtl.positions$Va.SE[i]   <- gcta.res.temp[2,3]
-      qtl.positions$Vp[i]      <- gcta.res.temp[4,2]
-      qtl.positions$Vp.SE[i]   <- gcta.res.temp[4,3]
-      qtl.positions$qtl2[i]    <- gcta.res.temp[5,2]
-      qtl.positions$qtl2.SE[i] <- gcta.res.temp[5,3]
-      qtl.positions$h2[i]      <- gcta.res.temp[6,2]
-      qtl.positions$h2.SE[i]   <- gcta.res.temp[6,3]
-      qtl.positions$LogL[i]    <- gcta.res.temp[8,2]
-
-    }
-
-    system(paste0("rm ", marker.prefix, snp.list.rng, ".snplist.", i , "*"))
-    system(paste0("rm ", marker.prefix, snp.list.rng, ".restlist.", i , "*"))
-
-
   }
   qtl.positions
 
